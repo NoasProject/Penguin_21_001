@@ -19,4 +19,25 @@ DB要件
 * テーブルはtaskテーブルを１つ作成し、カラムは、id, title(string)とstate(tiny int or string)、created_at(作成時間), updated_at(更新時間)の5つのカラムとする。
 * stateではタスクの完了状態を管理し、状態は、「todo」「done」の２値とする。
 
+```
+環境構築時に参考にした記事
+-- 
+https://qiita.com/Kyou13/items/be9cdc10c54d39cded15
 
+詰まったところ
+-- バージョンが新しいため発生した問題
+　- ruby:2.7.1 -> ruby:2.6.6 にダウングレード
+
+-- rails new でエラーになる
+　- この前に docker-compose builde を行えばok
+```
+
+```
+mysql が繋がらなくなった時の改善時に参考にしたドキュメントたち
+
+-- 
+https://kitsune.blog/docker-network
+
+-- 
+https://teratail.com/questions/296899
+```
