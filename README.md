@@ -35,8 +35,10 @@ https://qiita.com/Kyou13/items/be9cdc10c54d39cded15
 ```
 mysql が繋がらなくなった時の改善時に参考にしたドキュメントたち
 
--- 
+-- DBがない場合に作成する
 https://kitsune.blog/docker-network
+↑で解決
+
 
 -- 
 https://teratail.com/questions/296899
