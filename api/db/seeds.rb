@@ -5,3 +5,19 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+5.times do |i|
+  Todo.create(title: "Todo-発行#{i + 1}", state: 1)
+end
+
+3.times do |i|
+  Todo.create(title: "Todo-進行中#{i + 1}", state: 2)
+end
+
+4.times do |i|
+  Todo.create(title: "Todo-完了#{i + 1}", state: 3)
+end
+
+4.times do |i|
+  Todo.create(title: "Todo-アーカイブ#{i + 1}", state: 9)
+end

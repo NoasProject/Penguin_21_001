@@ -43,3 +43,13 @@ https://kitsune.blog/docker-network
 -- 
 https://teratail.com/questions/296899
 ```
+
+```
+// これで作成する
+rails g scaffold
+
+型一覧については下記参考
+rails g scaffold Todo group_id:integer state:integer title:string
+https://qiita.com/s_tatsuki/items/900d662a905c7e36b3d4
+```
+
