@@ -53,3 +53,8 @@ rails g scaffold Todo group_id:integer state:integer title:string
 https://qiita.com/s_tatsuki/items/900d662a905c7e36b3d4
 ```
 
+```
+【公式】初心者向けTODO
+https://zenn.dev/shima_zu/articles/vuejs_todo_application
+```
+
