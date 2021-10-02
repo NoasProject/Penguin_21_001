@@ -3,7 +3,16 @@ class TodosController < ApplicationController
 
   # GET /todos
   def index
+    @state = params[:state].to_i
+    logger.debug("ログ出力 : #{@state}")
+    logger.debug("State存在 : #{params[:state]}")
+    logger.debug("params : #{params}")
+
     @todos = Todo.all
+
+    if @state > 0
+      @todos = @todos.where(state: @state)
+    end
 
     render json: @todos
   end
