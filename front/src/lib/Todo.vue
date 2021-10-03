@@ -1,6 +1,7 @@
 <template>
   <div id="todo">
-    <TodoTop msg="TODO一覧" />
+    <img alt="Vue logo" src="../assets/logo.png" />
+    <TodoTop msg="Welcome to Your Vue.js App" />
   </div>
 </template>
 
@@ -8,7 +9,7 @@
 import TodoTop from "../components/TodoTop.vue";
 
 export default {
-  name: "todo",
+  name: "Todo",
   components: {
     TodoTop,
   },

@@ -13,12 +13,12 @@ new Vue({
   methods: {
     addItem: function () {
       console.log("Add Item.");
-      if (this.newItem == '') return; //タスク未入力の場合は追加しない
+      if (this.newItem == "") return; //タスク未入力の場合は追加しない
       var todo = {
         item: this.newItem
       };
       this.todos.push(todo);
-      this.newItem = '' //タスク追加後に入力欄を空にする
+      this.newItem = "" //タスク追加後に入力欄を空にする
     }
   }
 }).$mount("#todo");
@@ -26,4 +26,3 @@ new Vue({
 new Vue({
   render: (h) => h(App),
 }).$mount("#app");
-

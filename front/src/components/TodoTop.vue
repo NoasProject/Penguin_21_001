@@ -1,15 +1,12 @@
 <template>
-    <div id="todo_top">
-      <h2>{{ msg }}</h2>
-      <form v-on:submit.prevent>
-          <input type="text" v-model="newItem">
-          <button v-on:click="addItem">Add</button>
-      </form>
-      <ul>
-        <li v-for="todo in todos" :key="index">{{todo}}</li>
-      </ul>
-      <pre>{{ $data }}</pre>
-    </div>
+  <div id="todo_top">
+    <h2>{{ msg }}</h2>
+    <form v-on:submit.prevent>
+        <input type="text" v-model="newItem">
+        <button v-on:click="addItem">Add</button>
+    </form>
+    <pre>{{ $data }}</pre>
+  </div>
 </template>
 
 <script>
