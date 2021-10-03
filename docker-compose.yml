@@ -30,6 +30,8 @@ services:
       - '9090:8080'
     tty: true
     stdin_open: true
+    environment:
+      APP_API_ENDPOINT: http://localhost:3000
     command: npm run serve
 
 volumes:

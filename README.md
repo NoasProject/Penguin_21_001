@@ -61,3 +61,8 @@ https://zenn.dev/shima_zu/articles/vuejs_todo_application
 https://012-jp.vuejs.org/guide/
 ```
 
+```
+// APIを呼び出すためのModule
+npm install --save axios
+npm install --save vue-axios
+```
