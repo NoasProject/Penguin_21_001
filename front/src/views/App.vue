@@ -18,12 +18,12 @@
         <td>{{ todo.name }}</td>
         <td>{{ toStateName(todo.state) }}</td>
         <td>
-          <button v-on:click="nextState(todo.id)">
+          <button v-on:click="taskNextState(todo.id)">
             {{ toStateName(todo.state + 1) }}
           </button>
         </td>
         <td>
-          <button v-on:click="changeState(todo.id, 9)">削除</button>
+          <button v-on:click="taskDelete(todo.id)">削除</button>
         </td>
       </tr>
     </table>
@@ -31,8 +31,13 @@
 </template>
 
 <script>
+import State from "../components/constants/States";
+
 export default {
   name: "TodoTop",
+  created() {
+    this.States = State;
+  },
   data() {
     return {
       newItem: "",
@@ -53,7 +58,7 @@ export default {
       var obj = {
         id: this.todos.length + 1,
         name: item,
-        state: 0,
+        state: this.States.min,
       };
 
       this.todos.push(obj);
@@ -70,37 +75,48 @@ export default {
         */
     },
 
+    // 削除する
+    taskDelete: function (id) {
+      var state = this.States.delete;
+      this.taskStateChange(id, state);
+    },
+
     // 次の状態に変更する
-    nextState: function (id) {
+    taskNextState: function (id) {
       var findElement = this.todos.find((todo) => todo.id == id);
-      var nextState = findElement.state + 1;
-      if (nextState > 2) {
-        console.log("overflow range error.");
+      if (findElement === undefined) {
         return;
       }
-      return this.changeState(id, findElement.state + 1);
+
+      var nextState = findElement.state + 1;
+      if (nextState > this.States.complete) {
+        return;
+      }
+      return this.taskStateChange(id, nextState);
     },
 
     // 状態を変更する
-    changeState: function (id, state) {
+    taskStateChange: function (id, state) {
       var findElement = this.todos.find((todo) => todo.id == id);
+      if (findElement === undefined) {
+        return;
+      }
+
+      var elm = this.States.array.find((f) => f.id == state);
+      if (elm === undefined) {
+        console.log("不正な値");
+        return;
+      }
+
       findElement.state = state;
     },
 
     // Stateをみやすい名前に変換する
     toStateName: function (state) {
-      switch (state) {
-        case 0:
-          return "タスク";
-        case 1:
-          return "進行中";
-        case 2:
-          return "完了";
-        case 9:
-          return "対応しない";
-        default:
-          return "unkwon";
-      }
+      var elm = this.States.array.find((f) => f.id == state);
+      if (elm === undefined) return "unknow";
+
+      return elm.name;
     },
   },
 };
