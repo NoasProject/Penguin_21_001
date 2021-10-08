@@ -1,23 +1,23 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+  <div id="todo">
+    <img alt="Vue logo" src="../assets/logo.png" />
+    <TodoTop msg="Welcome to Your Vue.js App" />
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+import TodoTop from "../components/TodoTop.vue";
 
 export default {
-  name: "App",
+  name: "Todo",
   components: {
-    HelloWorld,
+    TodoTop,
   },
 };
 </script>
 
 <style>
-#app {
+#todo {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

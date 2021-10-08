@@ -1,0 +1,55 @@
+<template>
+  <div id="todo_top">
+    <h2>{{ msg }}</h2>
+    <form v-on:submit.prevent>
+      <input type="text" v-model="newItem" />
+      <button v-on:click="addItem">Add</button>
+    </form>
+    <pre>{{ $data }}</pre>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "TodoTop",
+  props: {
+    msg: String,
+    // newItem: String,
+  },
+  methods: {
+    addItem: function () {
+      if (this.newItem == "") {
+        console.log("タスク未入力.");
+        return; //タスク未入力の場合は追加しない
+      }
+      this.axios
+        .get("http://localhost:3000/todos")
+        .then((response) => {
+          alert(response.data.origin);
+        })
+        .catch((e) => {
+          alert(e);
+        });
+      this.this.newItem = ""; //タスク追加後に入力欄を空にする
+    },
+  },
+};
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+h3 {
+  margin: 40px 0 0;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+}
+</style>

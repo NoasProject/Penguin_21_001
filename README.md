@@ -43,3 +43,26 @@ https://kitsune.blog/docker-network
 -- 
 https://teratail.com/questions/296899
 ```
+
+```
+// これで作成する
+rails g scaffold
+
+型一覧については下記参考
+rails g scaffold Todo group_id:integer state:integer title:string
+https://qiita.com/s_tatsuki/items/900d662a905c7e36b3d4
+```
+
+```
+初心者向けTODO
+https://zenn.dev/shima_zu/articles/vuejs_todo_application
+
+【公式】
+https://012-jp.vuejs.org/guide/
+```
+
+```
+// APIを呼び出すためのModule
+npm install --save axios
+npm install --save vue-axios
+```
