@@ -37,6 +37,7 @@ export default {
   name: "TodoTop",
   created() {
     this.States = State;
+    this.fetchTodos();
   },
   data() {
     return {
@@ -57,22 +58,28 @@ export default {
 
       var obj = {
         id: this.todos.length + 1,
-        name: item,
+        title: item,
+        description: "",
         state: this.States.min,
+        created_at: "",
       };
 
       this.todos.push(obj);
+    },
 
-      /*
+    fetchTodos: function () {
       this.axios
         .get("http://localhost:3000/todos")
         .then((response) => {
-          alert(response.data.origin);
+          this.todos = [];
+          response.data.forEach((ele) => {
+            this.todos.push(ele);
+          });
+          console.log(response.data);
         })
         .catch((e) => {
           alert(e);
         });
-        */
     },
 
     // 削除する
