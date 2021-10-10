@@ -139,6 +139,9 @@ export default {
         return;
       }
 
+      this.inputTitleTxt = "";
+      this.inputDescriptionTxt = "";
+
       this.AddTodoApi(title, description);
       return;
 
