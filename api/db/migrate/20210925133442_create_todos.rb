@@ -4,6 +4,7 @@ class CreateTodos < ActiveRecord::Migration[6.1]
       t.integer :group_id
       t.integer :state
       t.string :title
+      t.string :description
 
       t.timestamps
     end

@@ -14,8 +14,9 @@ ActiveRecord::Schema.define(version: 2021_09_25_133442) do
 
   create_table "todos", charset: "utf8", force: :cascade do |t|
     t.integer "group_id"
-    t.integer "state", comment: "0:unknow\n1:Stay\n2:進行中\n3:完了\n9:アーカイブ"
+    t.integer "state"
     t.string "title"
+    t.string "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

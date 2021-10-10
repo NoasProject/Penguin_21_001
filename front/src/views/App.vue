@@ -2,21 +2,27 @@
   <div id="app">
     <h2>{{ msg }}</h2>
     <form v-on:submit.prevent>
-      <input type="text" v-model="newItem" />
+      <input type="text" v-model="inputTitleTxt" />
+      <input type="text" v-model="inputDescriptionTxt" />
       <button v-on:click="addItem">Add</button>
     </form>
     <table>
       <tr>
         <th>ID</th>
-        <th>NAME</th>
+        <th>TITLE</th>
+        <th>DESCRIPTION</th>
         <th>STATE</th>
+        <th>作成時刻</th>
         <th>NEXT</th>
+        <th>DELETE</th>
         <th>DELETE</th>
       </tr>
       <tr v-for="todo in todos" v-bind:key="todo.id">
         <td>{{ todo.id }}</td>
-        <td>{{ todo.name }}</td>
+        <td>{{ todo.title }}</td>
+        <td>{{ todo.description }}</td>
         <td>{{ toStateName(todo.state) }}</td>
+        <td>{{ todo.created_at }}</td>
         <td>
           <button v-on:click="taskNextState(todo.id)">
             {{ toStateName(todo.state + 1) }}
@@ -24,6 +30,9 @@
         </td>
         <td>
           <button v-on:click="taskDelete(todo.id)">削除</button>
+        </td>
+        <td>
+          <button v-on:click="taskRealDelete(todo.id)">物理削除</button>
         </td>
       </tr>
     </table>
@@ -37,11 +46,12 @@ export default {
   name: "TodoTop",
   created() {
     this.States = State;
-    this.fetchTodos();
+    this.fetchTodosApi();
   },
   data() {
     return {
-      newItem: "",
+      inputTitleTxt: "",
+      inputDescriptionTxt: "",
       todos: [],
     };
   },
@@ -49,27 +59,15 @@ export default {
     msg: String,
   },
   methods: {
-    addItem: function () {
-      var item = this.newItem;
-      if (item == "") {
-        alert("タスク未入力");
-        return;
-      }
-
-      var obj = {
-        id: this.todos.length + 1,
-        title: item,
-        description: "",
-        state: this.States.min,
-        created_at: "",
-      };
-
-      this.todos.push(obj);
-    },
-
-    fetchTodos: function () {
+    // <---- API
+    // タスクの一覧を取得する
+    fetchTodosApi: function () {
       this.axios
-        .get("http://localhost:3000/todos")
+        .get("http://localhost:3000/todos", {
+          params: {
+            limit: 100,
+          },
+        })
         .then((response) => {
           this.todos = [];
           response.data.forEach((ele) => {
@@ -80,6 +78,85 @@ export default {
         .catch((e) => {
           alert(e);
         });
+    },
+
+    // タスクを追加する
+    AddTodoApi: function (title, description) {
+      this.axios
+        .post("http://localhost:3000/todos", {
+          operation: "create",
+          title: title,
+          description: description,
+        })
+        .then((response) => {
+          console.log(response);
+          // TODO: Responseで更新するのが良い
+          this.fetchTodosApi();
+        })
+        .catch((e) => {
+          alert(e);
+        });
+    },
+
+    // タスクのStateを更新する
+    UpdateTodoStateApi: function (id, state) {
+      this.axios
+        .put("http://localhost:3000/todos/" + id, {
+          id: id,
+          state: state,
+        })
+        .then((response) => {
+          console.log(response.data);
+          this.fetchTodosApi();
+        })
+        .catch((e) => {
+          alert(e);
+        });
+    },
+
+    // タスクのStateを更新する
+    destroyTodoApi: function (id) {
+      this.axios
+        .delete("http://localhost:3000/todos/" + id, {
+          id: id,
+        })
+        .then((response) => {
+          console.log(response.data);
+          this.fetchTodosApi();
+        })
+        .catch((e) => {
+          alert(e);
+        });
+    },
+    // ---->
+
+    // <--- UI Action
+    addItem: function () {
+      var title = this.inputTitleTxt;
+      var description = this.inputDescriptionTxt;
+      if (title == "") {
+        alert("タスク未入力");
+        return;
+      }
+
+      this.AddTodoApi(title, description);
+      return;
+
+      /*
+      var obj = {
+        id: this.todos.length + 1,
+        title: item,
+        description: "",
+        state: this.States.min,
+        created_at: "",
+      };
+
+      this.todos.push(obj);
+      */
+    },
+    // 削除する
+    taskRealDelete: function (id) {
+      this.destroyTodoApi(id);
     },
 
     // 削除する
@@ -114,14 +191,14 @@ export default {
         console.log("不正な値");
         return;
       }
-
       findElement.state = state;
+      this.UpdateTodoStateApi(id, state);
     },
 
     // Stateをみやすい名前に変換する
     toStateName: function (state) {
       var elm = this.States.array.find((f) => f.id == state);
-      if (elm === undefined) return "unknow";
+      if (elm === undefined) return "- - -";
 
       return elm.name;
     },
