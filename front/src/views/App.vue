@@ -15,7 +15,7 @@
         <th>作成時刻</th>
         <th>NEXT</th>
         <th>DELETE</th>
-        <th>DELETE</th>
+        <th>ARCHIVE</th>
       </tr>
       <tr v-for="todo in todos" v-bind:key="todo.id">
         <td>{{ todo.id }}</td>
@@ -32,7 +32,7 @@
           <button v-on:click="taskDelete(todo.id)">削除</button>
         </td>
         <td>
-          <button v-on:click="taskRealDelete(todo.id)">物理削除</button>
+          <button v-on:click="taskRealDelete(todo.id)">アーカイブ</button>
         </td>
       </tr>
     </table>
