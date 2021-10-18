@@ -1,9 +1,15 @@
 <template>
   <div>
     <form v-on:submit.prevent>
-      <input type="text" v-model="task.title" />
-      <input type="text" v-model="task.description" />
-      <button v-on:click="createTodo()">Add</button>
+      <p>
+        <label for="title">タイトル</label>
+        <input type="text" v-model="task.title" />
+      <br>
+        <label for="description">説明文</label>
+        <input type="text" v-model="task.description" />
+      <br>
+      <button style="width:10%;" v-on:click="createTodo()">Add</button>
+      </p>
     </form>
     <table>
       <tr>
