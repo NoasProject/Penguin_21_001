@@ -2,9 +2,9 @@
   <div id="app">
     <h2>{{ msg }}</h2>
     <form v-on:submit.prevent>
-      <input type="text" v-model="inputTitleTxt" />
-      <input type="text" v-model="inputDescriptionTxt" />
-      <button v-on:click="addItem">Add</button>
+      <input type="text" v-model="task.title" />
+      <input type="text" v-model="task.description" />
+      <button v-on:click="createTodo()">Add</button>
     </form>
     <table>
       <tr>
@@ -12,47 +12,54 @@
         <th>TITLE</th>
         <th>DESCRIPTION</th>
         <th>STATE</th>
-        <th>作成時刻</th>
         <th>NEXT</th>
         <th>DELETE</th>
-        <th>ARCHIVE</th>
+        <th>作成時刻</th>
       </tr>
       <tr v-for="todo in todos" v-bind:key="todo.id">
         <td>{{ todo.id }}</td>
         <td>{{ todo.title }}</td>
         <td>{{ todo.description }}</td>
         <td>{{ toStateName(todo.state) }}</td>
-        <td>{{ todo.created_at }}</td>
         <td>
-          <button v-on:click="taskNextState(todo.id)">
+          <!-- 更新処理のボタン -->
+          <button :disabled="todo.state >= state.complete" v-on:click="updateTodo(todo, todo.state + 1)">
             {{ toStateName(todo.state + 1) }}
           </button>
         </td>
         <td>
-          <button v-on:click="taskDelete(todo.id)">削除</button>
+          <!-- 削除のボタン -->
+          <button :disabled="todo.state == state.delete" v-on:click="destroyTodo(todo.id)">アーカイブ</button>
         </td>
-        <td>
-          <button v-on:click="taskRealDelete(todo.id)">アーカイブ</button>
-        </td>
+        <td>{{ todo.created_at }}</td>
       </tr>
     </table>
   </div>
 </template>
 
 <script>
-import State from "../components/constants/States";
-
 export default {
-  name: "TodoTop",
   created() {
-    this.States = State;
-    this.fetchTodosApi();
+    this.fetchTodo();
   },
   data() {
     return {
-      inputTitleTxt: "",
-      inputDescriptionTxt: "",
+      task: {
+        title: "",
+        description: "",
+      },
       todos: [],
+      state: {
+        names: {
+          1: "オープン",
+          2: "進行中",
+          3: "完了",
+          9: "削除",
+        },
+        min: 1,
+        delete: 9,
+        complete: 3,
+      },
     };
   },
   props: {
@@ -61,7 +68,7 @@ export default {
   methods: {
     // <---- API
     // タスクの一覧を取得する
-    fetchTodosApi: function () {
+    fetchTodo: function () {
       this.axios
         .get("http://localhost:3000/todos", {
           params: {
@@ -69,10 +76,7 @@ export default {
           },
         })
         .then((response) => {
-          this.todos = [];
-          response.data.forEach((ele) => {
-            this.todos.push(ele);
-          });
+          this.todos = response.data;
           console.log(response.data);
         })
         .catch((e) => {
@@ -81,17 +85,14 @@ export default {
     },
 
     // タスクを追加する
-    AddTodoApi: function (title, description) {
+    createTodo: function () {
+      var p = this.task;
       this.axios
-        .post("http://localhost:3000/todos", {
-          operation: "create",
-          title: title,
-          description: description,
-        })
+        .post("http://localhost:3000/todos", p)
         .then((response) => {
           console.log(response);
-          // TODO: Responseで更新するのが良い
-          this.fetchTodosApi();
+          this.todos.push(response.data);
+          this.task = {};
         })
         .catch((e) => {
           alert(e);
@@ -99,15 +100,19 @@ export default {
     },
 
     // タスクのStateを更新する
-    UpdateTodoStateApi: function (id, state) {
+    updateTodo: function (todo, state) {
+      var id = todo.id;
+      todo.state = state;
       this.axios
-        .put("http://localhost:3000/todos/" + id, {
-          id: id,
+        .patch("http://localhost:3000/todos/" + id, {
           state: state,
         })
         .then((response) => {
           console.log(response.data);
-          this.fetchTodosApi();
+          var targetIndex = this.todos.findIndex((i) => i.id == id);
+          if (targetIndex >= 0) {
+            this.todos[targetIndex] = todo;
+          }
         })
         .catch((e) => {
           alert(e);
@@ -115,95 +120,29 @@ export default {
     },
 
     // タスクのStateを更新する
-    destroyTodoApi: function (id) {
+    destroyTodo: function (id) {
       this.axios
-        .delete("http://localhost:3000/todos/" + id, {
-          id: id,
-        })
+        .delete("http://localhost:3000/todos/" + id)
         .then((response) => {
           console.log(response.data);
-          this.fetchTodosApi();
+          var destroyIndex = this.todos.findIndex((i) => i.id == id);
+          if (destroyIndex >= 0) {
+            this.todos.splice(destroyIndex, 1);
+          } else {
+            console.log("削除対象のIndexが存在しませんでした: " + destroyIndex);
+          }
         })
         .catch((e) => {
           alert(e);
         });
     },
-    // ---->
-
-    // <--- UI Action
-    addItem: function () {
-      var title = this.inputTitleTxt;
-      var description = this.inputDescriptionTxt;
-      if (title == "") {
-        alert("タスク未入力");
-        return;
-      }
-
-      this.inputTitleTxt = "";
-      this.inputDescriptionTxt = "";
-
-      this.AddTodoApi(title, description);
-      return;
-
-      /*
-      var obj = {
-        id: this.todos.length + 1,
-        title: item,
-        description: "",
-        state: this.States.min,
-        created_at: "",
-      };
-
-      this.todos.push(obj);
-      */
-    },
-    // 削除する
-    taskRealDelete: function (id) {
-      this.destroyTodoApi(id);
-    },
-
-    // 削除する
-    taskDelete: function (id) {
-      var state = this.States.delete;
-      this.taskStateChange(id, state);
-    },
-
-    // 次の状態に変更する
-    taskNextState: function (id) {
-      var findElement = this.todos.find((todo) => todo.id == id);
-      if (findElement === undefined) {
-        return;
-      }
-
-      var nextState = findElement.state + 1;
-      if (nextState > this.States.complete) {
-        return;
-      }
-      return this.taskStateChange(id, nextState);
-    },
-
-    // 状態を変更する
-    taskStateChange: function (id, state) {
-      var findElement = this.todos.find((todo) => todo.id == id);
-      if (findElement === undefined) {
-        return;
-      }
-
-      var elm = this.States.array.find((f) => f.id == state);
-      if (elm === undefined) {
-        console.log("不正な値");
-        return;
-      }
-      findElement.state = state;
-      this.UpdateTodoStateApi(id, state);
-    },
 
     // Stateをみやすい名前に変換する
     toStateName: function (state) {
-      var elm = this.States.array.find((f) => f.id == state);
-      if (elm === undefined) return "- - -";
-
-      return elm.name;
+      if (state in this.state.names) {
+        return this.state.names[state];
+      }
+      return "- - -";
     },
   },
 };
