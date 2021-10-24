@@ -8,37 +8,35 @@
         <label for="description">説明文</label>
         <input type="text" v-model="task.description" />
       <br>
-      <button style="width:10%;" v-on:click="createTodo()">Add</button>
+      <b-button variant="success" style="width:10%;" v-on:click="createTodo()">Add</b-button>
       </p>
     </form>
-    <table>
-      <tr>
-        <th>ID</th>
-        <th>TITLE</th>
-        <th>DESCRIPTION</th>
-        <th>STATE</th>
-        <th>NEXT</th>
-        <th>DELETE</th>
-        <th>作成時刻</th>
-      </tr>
-      <tr v-for="todo in todos" v-bind:key="todo.id">
-        <td>{{ todo.id }}</td>
-        <td>{{ todo.title }}</td>
-        <td>{{ todo.description }}</td>
-        <td>{{ toStateName(todo.state) }}</td>
-        <td>
-          <!-- 更新処理のボタン -->
-          <button :disabled="todo.state >= state.complete" v-on:click="updateTodo(todo, todo.state + 1)">
-            {{ toStateName(todo.state + 1) }}
-          </button>
-        </td>
-        <td>
-          <!-- 削除のボタン -->
-          <button :disabled="todo.state == state.delete" v-on:click="destroyTodo(todo.id)">アーカイブ</button>
-        </td>
-        <td>{{ todo.created_at }}</td>
-      </tr>
-    </table>
+    <b-table
+      :fields="fields"
+      :items="todos">
+
+      <!-- 操作 -->
+      <template v-slot:cell(operation)="data">
+        <div v-if="data.item.state < state.complete">
+          <b-button size="sm" @click="updateTodo(data.item.id, data.item.state + 1)" class="mr-1" variant="success">
+            {{ state.names[data.item.state + 1] }}
+          </b-button>
+        </div>
+        <div v-else>
+          <b-button size="sm" disabled @click="updateTodo(data.item.id, data.item.state + 1)" class="mr-1" variant="success">
+            ---
+          </b-button>
+        </div>
+      </template>
+
+      <!-- 削除 -->
+      <template v-slot:cell(destroy)="data">
+        <b-button size="sm" @click="destroyTodo(data.item.id)" class="mr-1" variant="danger">
+          削除
+        </b-button>
+      </template>
+
+    </b-table>
   </div>
 </template>
 
@@ -65,6 +63,15 @@ export default {
         delete: 9,
         complete: 3,
       },
+      fields: [
+        "id",
+        "title",
+        "description",
+        { key: "state", label: "ステータス" },
+        { key: "operation", label: "操作" },
+        { key: "destroy", label: "削除" },
+        "created_at",
+      ],
     };
   },
   props: {},
@@ -103,8 +110,12 @@ export default {
     },
 
     // タスクのStateを更新する
-    updateTodo: function (todo, state) {
-      var id = todo.id;
+    updateTodo: function (id, state) {
+      var todo = this.todos.find((f) => f.id == id);
+      if (todo === undefined) {
+        console.log("Not Found Id. #{id}");
+        return;
+      }
       todo.state = state;
       this.axios
         .patch("http://localhost:3000/todos/" + id, {
@@ -124,6 +135,12 @@ export default {
 
     // タスクのStateを更新する
     destroyTodo: function (id) {
+      var todo = this.todos.find((f) => f.id == id);
+      if (todo === undefined) {
+        console.log("Not Found Id. #{id}");
+        return;
+      }
+
       this.axios
         .delete("http://localhost:3000/todos/" + id)
         .then((response) => {
