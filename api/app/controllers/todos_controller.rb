@@ -5,9 +5,6 @@ class TodosController < ApplicationController
   def index
     @state = params[:state].to_i
     @limit = params[:limit].to_i
-    logger.debug("ログ出力 : #{@state}")
-    logger.debug("State存在 : #{params[:state]}")
-    logger.debug("params : #{params}")
 
     @todos = Todo.all
 
@@ -29,20 +26,9 @@ class TodosController < ApplicationController
 
   # POST /todos
   def create
-    @todo_params = params;
-    @id = @todo_params[:id].to_i
-    @state = @todo_params[:state].to_i
-    @title = @todo_params[:title]
-    @description = @todo_params[:description]
+    @todo = Todo.new(todo_params)
+    @todo[:state] = 1
 
-    logger.debug("params: #{@todo_params}");
-
-    @createParam = {};
-    @createParam[:title] = @title;
-    @createParam[:description] = @description;
-    @createParam[:state] = 1;
-
-    @todo = Todo.new(@createParam)
     if @todo.save
       render json: @todo, status: :created, location: @todo
     else
@@ -52,26 +38,13 @@ class TodosController < ApplicationController
 
   # PATCH/PUT /todos/1
   def update
-    @todo_params = params;
-    @id = @todo_params[:id].to_i
-    @state = @todo_params[:state].to_i
-    @title = @todo_params[:title]
-    @description = @todo_params[:description]
-
-    @updateTodo = {}
-
-  if @title != nil
-      @updateTodo[:title] = @title
+    @p = todo_params
+    @state = @p[:state].to_i
+    if (@state >= 3 && @state != 9)
+      @p.delete("state")
     end
-    if @description != nil
-      @updateTodo[:description] = @description
-    end
-    if @state != nil && @state >= 0
-      @updateTodo[:state] = @state
-    end
-    logger.debug("updateTodo #{@updateTodo}.");
 
-    if @todo.update(@updateTodo)
+    if @todo.update(@p)
       render json: @todo
     else
       render json: @todo.errors, status: :unprocessable_entity
@@ -91,7 +64,6 @@ class TodosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def todo_params
-      params.require(:todo).
-      (:group_id, :state, :title)
+      params.require(:todo).permit(:group_id, :state, :title, :description)
     end
 end
