@@ -21,3 +21,6 @@ end
 4.times do |i|
   Todo.create(title: "Todo-アーカイブ#{i + 1}", description: "TODO説明文#{i + 1}", state: 9)
 end
+
+# User Created
+User.create(name: "Tanaka", login_id: "test001", login_password: "test001", login_token:"token")

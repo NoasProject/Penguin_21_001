@@ -1,15 +1,13 @@
 <template>
   <div>
-    <Top></Top>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import Top from "../components/TodoTop.vue";
 export default {
-  components: {
-    Top,
+  created() {
+    this.$router.push("/login");
   },
-  methods: {},
 };
 </script>

@@ -8,12 +8,46 @@
         <label for="description">説明文</label>
         <input type="text" v-model="task.description" />
       <br>
-      <b-button variant="success" style="width:10%;" v-on:click="createTodo()">Add</b-button>
+      
+      <!-- タイトルだけは必須入力 -->
+      <b-button :disabled="task.title == ''" variant="success" style="width:10%;" v-on:click="createTodo()">追加する</b-button>
+      <b-button variant="danger" style="width:10%;" v-on:click="onLogout()">ログアウト</b-button>
       </p>
     </form>
     <b-table
       :fields="fields"
       :items="todos">
+
+      <!-- タイトル -->
+      <template v-slot:cell(title)="data">
+        <div @click="edit_id.title = data.item.id">
+          <p v-if="edit_id.title == data.item.id">
+            {{ data.item.title }}
+          </p>
+          <p v-else>
+            {{ data.item.title }}
+          </p>
+        </div>
+      </template>
+
+      <!-- 説明文 -->
+      <template v-slot:cell(description)="data">
+        <div @click="onClickDescription(data.item.id)">
+          <p v-if="edit_id.description == data.item.id">
+            <input type="text" v-model="task.description" />
+          </p>
+          <p v-else>
+            {{ data.item.description }}
+          </p>
+        </div>
+      </template>
+
+      <!-- 状態 -->
+      <template v-slot:cell(state)="data">
+        <p>
+          {{ state.names[data.item.state] }}
+        </p>
+      </template>
 
       <!-- 操作 -->
       <template v-slot:cell(operation)="data">
@@ -50,6 +84,10 @@ export default {
       task: {
         title: "",
         description: "",
+      },
+      edit_id: {
+        title: 0,
+        description: 0,
       },
       todos: [],
       state: {
@@ -157,12 +195,16 @@ export default {
         });
     },
 
-    // Stateをみやすい名前に変換する
-    toStateName: function (state) {
-      if (state in this.state.names) {
-        return this.state.names[state];
-      }
-      return "- - -";
+    onClickDescription: function (id) {
+      console.log("onClickDescription: " + id);
+      this.edit_id.description = Number(id);
+    },
+
+    onLogout: function () {
+      this.$cookie.delete("login-token");
+      alert("ログアウトを行いました");
+
+      this.$router.push("/login");
     },
   },
 };
