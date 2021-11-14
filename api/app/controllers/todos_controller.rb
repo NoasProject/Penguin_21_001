@@ -29,7 +29,7 @@ class TodosController < ApplicationController
   def update
     @p = todo_params
     @state = @p[:state].to_i
-    if (@state >= 3 && @state != 9)
+    if (@state > 3 && @state != 9)
       @p.delete("state")
     end
 
