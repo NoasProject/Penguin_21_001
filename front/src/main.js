@@ -23,4 +23,11 @@ const vue = new Vue({
   render: (h) => h(FirstView),
 }).$mount("#app");
 
-export default vue;
+export default {
+  vue,
+  created() {
+
+  },
+  methods: {
+  }
+};

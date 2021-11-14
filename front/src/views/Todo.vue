@@ -11,10 +11,5 @@ export default {
     TodoTop,
   },
   methods: {},
-  beforeRouteUpdate(to, from, next) {
-    //再描画前のアクション
-    next();
-    //再描画後のアクション
-  },
 };
 </script>

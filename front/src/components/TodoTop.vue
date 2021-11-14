@@ -77,10 +77,12 @@
 <script>
 export default {
   created() {
+    this.loginToken = this.$cookies.get("login-token");
     this.fetchTodo();
   },
   data() {
     return {
+      loginToken: undefined,
       task: {
         title: "",
         description: "",
@@ -120,6 +122,7 @@ export default {
       this.axios
         .get("http://localhost:3000/todos", {
           params: {
+            login_token: this.loginToken,
             limit: 100,
           },
         })
@@ -135,6 +138,7 @@ export default {
     // タスクを追加する
     createTodo: function () {
       var p = this.task;
+      p.login_token = this.loginToken;
       this.axios
         .post("http://localhost:3000/todos", p)
         .then((response) => {
@@ -157,6 +161,7 @@ export default {
       todo.state = state;
       this.axios
         .patch("http://localhost:3000/todos/" + id, {
+          login_token: this.loginToken,
           state: state,
         })
         .then((response) => {
@@ -180,7 +185,11 @@ export default {
       }
 
       this.axios
-        .delete("http://localhost:3000/todos/" + id)
+        .delete("http://localhost:3000/todos/" + id, {
+          params: {
+            login_token: this.loginToken,
+          },
+        })
         .then((response) => {
           console.log(response.data);
           var destroyIndex = this.todos.findIndex((i) => i.id == id);
@@ -201,7 +210,7 @@ export default {
     },
 
     onLogout: function () {
-      this.$cookie.delete("login-token");
+      this.$cookies.remove("login-token");
       alert("ログアウトを行いました");
 
       this.$router.push("/login");

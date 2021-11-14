@@ -13,6 +13,7 @@
 ActiveRecord::Schema.define(version: 2021_11_07_195800) do
 
   create_table "todos", charset: "utf8", force: :cascade do |t|
+    t.integer "user_id"
     t.integer "group_id"
     t.integer "state"
     t.string "title"
