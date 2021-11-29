@@ -125,10 +125,7 @@ export default {
         })
         .then((response) => {
           console.log(response.data);
-          var targetIndex = this.todos.findIndex((i) => i.id == id);
-          if (targetIndex >= 0) {
-            this.todos[targetIndex] = todo;
-          }
+          this.$emit("todos:update", todo);
         })
         .catch((e) => {
           alert(e);
@@ -151,12 +148,7 @@ export default {
         })
         .then((response) => {
           console.log(response.data);
-          var destroyIndex = this.todos.findIndex((i) => i.id == id);
-          if (destroyIndex >= 0) {
-            this.todos.splice(destroyIndex, 1);
-          } else {
-            console.log("削除対象のIndexが存在しませんでした: " + destroyIndex);
-          }
+          this.$emit("todos:delete", id);
         })
         .catch((e) => {
           alert(e);
@@ -168,12 +160,6 @@ export default {
       this.edit_id.description = Number(id);
     },
 
-    onLogout: function () {
-      this.$cookies.remove("login-token");
-      alert("ログアウトを行いました");
-
-      this.$router.push("/login");
-    },
     updateTodosData: function (newTodos) {
       this.todos = newTodos;
       console.log("updateTodosData");

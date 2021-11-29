@@ -4,7 +4,7 @@
       ref="TodoInputForm"
       :propTodos="todos"
       :loginToken="loginToken"
-      @todos:push="todos.push($event); updateTodosData()"
+      @todos:push="todos.push($event); updateTree()"
     >
     </TodoInputForm>
     
@@ -13,6 +13,8 @@
       :propTodos="todos"
       :state="state"
       :loginToken="loginToken"
+      @todos:delete="todos.splice(todos.findIndex((i) => i.id == $event), 1); updateTree()"
+      @todos:update="updateTodo($event)"
     >
     </TodoTree>
   </div>
@@ -76,14 +78,20 @@ export default {
         .then((response) => {
           this.todos = response.data;
           console.log(response.data);
-          this.updateTodosData();
+          this.updateTree();
         })
         .catch((e) => {
           alert(e);
         });
     },
+    updateTodo: function (todo) {
+      var targetIndex = this.todos.findIndex((i) => i.id == todo.id);
+      if (targetIndex >= 0) {
+        this.todos[targetIndex] = todo;
+      }
+    },
 
-    updateTodosData: function () {
+    updateTree: function () {
       this.$refs.TodoTree.updateTodosData(this.todos);
     },
   },
