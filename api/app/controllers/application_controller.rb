@@ -19,7 +19,7 @@ class ApplicationController < ActionController::API
             # AuthError.
             if @user == nil
                 logger.debug("Tokenが存在しないため、Userを取得できませんでした, Token: #{params[:login_token]}")
-                render json: @todo.errors, status: :unprocessable_entity
+                render json: @user.errors, status: :unprocessable_entity
             end
             logger.debug(@user.id);
             @userId = @user.id

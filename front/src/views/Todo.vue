@@ -1,15 +1,91 @@
 <template>
   <div>
-    <TodoTop></TodoTop>
+    <TodoInputForm 
+      ref="TodoInputForm"
+      :propTodos="todos"
+      :loginToken="loginToken"
+      @todos:push="todos.push($event); updateTodosData()"
+    >
+    </TodoInputForm>
+    
+    <TodoTree 
+      ref="TodoTree"
+      :propTodos="todos"
+      :state="state"
+      :loginToken="loginToken"
+    >
+    </TodoTree>
   </div>
 </template>
 
 <script>
-import TodoTop from "../components/TodoTop.vue";
+import TodoInputForm from "../components/Todo/TodoInputForm.vue";
+import TodoTree from "../components/Todo/TodoTree.vue";
 export default {
   components: {
-    TodoTop,
+    TodoInputForm,
+    TodoTree,
   },
-  methods: {},
+  created() {
+    this.loginToken = this.$cookies.get("login-token");
+    this.fetchTodo();
+  },
+  data() {
+    return {
+      loginToken: undefined,
+      task: {
+        title: "",
+        description: "",
+      },
+      edit_id: {
+        title: 0,
+        description: 0,
+      },
+      todos: [],
+      state: {
+        names: {
+          1: "オープン",
+          2: "進行中",
+          3: "完了",
+          9: "削除",
+        },
+        min: 1,
+        delete: 9,
+        complete: 3,
+      },
+      fields: [
+        "id",
+        "title",
+        "description",
+        { key: "state", label: "ステータス" },
+        { key: "operation", label: "操作" },
+        { key: "destroy", label: "削除" },
+        "created_at",
+      ],
+    };
+  },
+  methods: {
+    fetchTodo: function () {
+      this.axios
+        .get("http://localhost:3000/todos", {
+          params: {
+            login_token: this.loginToken,
+            limit: 100,
+          },
+        })
+        .then((response) => {
+          this.todos = response.data;
+          console.log(response.data);
+          this.updateTodosData();
+        })
+        .catch((e) => {
+          alert(e);
+        });
+    },
+
+    updateTodosData: function () {
+      this.$refs.TodoTree.updateTodosData(this.todos);
+    },
+  },
 };
 </script>

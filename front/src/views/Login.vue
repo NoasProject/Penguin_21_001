@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import LoginTop from "../components/LoginTop.vue";
+import LoginTop from "../components/Login/LoginTop.vue";
 export default {
   components: {
     LoginTop,

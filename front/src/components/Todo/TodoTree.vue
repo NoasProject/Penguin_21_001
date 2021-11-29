@@ -1,19 +1,5 @@
 <template>
   <div>
-    <form v-on:submit.prevent>
-      <p>
-        <label for="title">タイトル</label>
-        <input type="text" v-model="task.title" />
-      <br>
-        <label for="description">説明文</label>
-        <input type="text" v-model="task.description" />
-      <br>
-      
-      <!-- タイトルだけは必須入力 -->
-      <b-button :disabled="task.title == ''" variant="success" style="width:10%;" v-on:click="createTodo()">追加する</b-button>
-      <b-button variant="danger" style="width:10%;" v-on:click="onLogout()">ログアウト</b-button>
-      </p>
-    </form>
     <b-table
       :fields="fields"
       :items="todos">
@@ -76,13 +62,17 @@
 
 <script>
 export default {
-  created() {
-    this.loginToken = this.$cookies.get("login-token");
-    this.fetchTodo();
+  created() {},
+  props: {
+    loginToken: String,
+    state: Object,
+    propTodos: Array,
+  },
+  mounted() {
+    this.todos = this.propTodos;
   },
   data() {
     return {
-      loginToken: undefined,
       task: {
         title: "",
         description: "",
@@ -91,18 +81,7 @@ export default {
         title: 0,
         description: 0,
       },
-      todos: [],
-      state: {
-        names: {
-          1: "オープン",
-          2: "進行中",
-          3: "完了",
-          9: "削除",
-        },
-        min: 1,
-        delete: 9,
-        complete: 3,
-      },
+      todos: this.propTodos,
       fields: [
         "id",
         "title",
@@ -114,27 +93,7 @@ export default {
       ],
     };
   },
-  props: {},
   methods: {
-    // <---- API
-    // タスクの一覧を取得する
-    fetchTodo: function () {
-      this.axios
-        .get("http://localhost:3000/todos", {
-          params: {
-            login_token: this.loginToken,
-            limit: 100,
-          },
-        })
-        .then((response) => {
-          this.todos = response.data;
-          console.log(response.data);
-        })
-        .catch((e) => {
-          alert(e);
-        });
-    },
-
     // タスクを追加する
     createTodo: function () {
       var p = this.task;
@@ -214,6 +173,10 @@ export default {
       alert("ログアウトを行いました");
 
       this.$router.push("/login");
+    },
+    updateTodosData: function (newTodos) {
+      this.todos = newTodos;
+      console.log("updateTodosData");
     },
   },
 };
